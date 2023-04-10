@@ -57,7 +57,7 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-      function actualizarTabla(pagina) {
+     function actualizarTabla(pagina) {
         $.ajax({
           url: "/",
           data: { page: pagina },
@@ -78,14 +78,90 @@
 
       $(document).on("click", ".pagination .page-link", function (event) {
         event.preventDefault();
+        console.log("ejecutando");
 
         // Remover la clase active de todos los botones de la paginación
         $(".pagination .page-item").removeClass("active");
-
         var pagina = $(this).attr("href").split("=")[1];
-        console.log(pagina);
+        console.log("page actual", pagina);
+
+        creandoPrevious(pagina);
         actualizarTabla(pagina);
       });
+
+      // Obtén el elemento <a> que contiene el texto "(current)"
+      var currentLink = $(".page-link").filter(':contains("(current)")');
+      // Obtén el número de página actual
+      var currentPage = currentLink.text().replace("(current)", "").trim();
+      // Crea un nuevo elemento <a> con el texto modificado y la URL correspondiente
+      var newLink = $("<a>", {
+        class: "page-link",
+        href: "/?page=" + currentPage,
+        text: currentPage,
+      });
+      // Reemplaza el elemento <a> original con el nuevo elemento <a>
+      currentLink.replaceWith(newLink);
+      // Obtén el elemento <li> que tiene la clase "page-item active"
+      var activePageItem = $(".page-item.active");
+      // Si la página actual es la página 1, no es necesario modificar nada
+      if (currentPage !== "1") {
+        // Reemplaza el contenido del elemento <li> con el nuevo elemento <a> modificado
+        activePageItem.empty().append(newLink.parent());
+      }
+
+      // Agregar evento click para el botón siguiente
+      $(document).on(
+        "click",
+        ".pagination .page-item.active + .page-item a",
+        function (event) {
+          event.preventDefault();
+
+          //Habilitando el boton siguiente
+          $("li.page-item.disabled")
+            .removeClass("disabled")
+            .addClass("Previous");
+
+          let pagina = $(this).attr("href").split("=")[1];
+          // Actualizar la tabla con la página correspondiente
+          actualizarTabla(pagina);
+        }
+      );
+
+      /*
+       * Estilizando el boton siguiente
+       */
+      $("li.page-item a[aria-label='Next']").click(function (event) {
+        event.preventDefault();
+        Next();
+      });
+      function Next() {
+        //Habilitando el boton siguiente
+        $("li.page-item.disabled").removeClass("disabled").addClass("Previous");
+
+        var pageNumber = $(".page-item.active a").text();
+        var nextPageNumber = parseInt(pageNumber) + 1;
+
+        var lastPageNumber = parseInt($(".page-item:last-child a").text());
+        if (nextPageNumber > lastPageNumber) {
+          nextPageNumber = 1; // Reiniciar la paginación y volver a la primera página
+        }
+        var nextPageUrl = "/?page=" + nextPageNumber;
+        $("li.page-item a[aria-label='Next']").attr("href", nextPageUrl);
+      }
+
+      function creandoPrevious(pagina_actual) {
+        if (pagina_actual > 1) {
+          // Verificar que la página actual no sea la primera página
+          $("li.page-item.disabled")
+            .removeClass("disabled")
+            .addClass("Previous"); // Modificar la clase del elemento de lista
+          $("li.page-item.Previous").html(
+            "<a class='page-link' href='/?page=" +
+              (pagina_actual - 1) +
+              "'><span> « </span></a>"
+          );
+        }
+      }
     </script>
   </body>
 </html>
