@@ -8,75 +8,77 @@ app = Flask(__name__)
 
 
 # Creando mi Decorador Home
-@app.route("/")
+@app.route("/",  methods=['GET'])
 def inicio():
-    conexion_MySQLdb = connectionBD()
-    cursor = conexion_MySQLdb.cursor(dictionary=True)
+    if request.method    == "POST":
+        conexion_MySQLdb = connectionBD()
+        cursor = conexion_MySQLdb.cursor(dictionary=True)
 
-    # Contar el número total de registros
-    cursor.execute(
-        "SELECT COUNT(*) AS total FROM personas ")
-    count = cursor.fetchone()['total']
+        # Contar el número total de registros
+        cursor.execute(
+            "SELECT COUNT(*) AS total FROM personas ")
+        count = cursor.fetchone()['total']
 
-    # Obtener el número de página actual y la cantidad de resultados por página
-    page_num = request.args.get('page', 1, type=int)
-    per_page = 5
+        # Obtener el número de página actual y la cantidad de resultados por página
+        page_num = request.args.get('page', 1, type=int)
+        per_page = 5
 
-    # Calcular el índice del primer registro y limitar la consulta a un rango de registros
-    start_index = (page_num - 1) * per_page + 1
+        # Calcular el índice del primer registro y limitar la consulta a un rango de registros
+        start_index = (page_num - 1) * per_page + 1
 
-    querySQL = (f"SELECT * FROM personas "
-            f"ORDER BY id_persona DESC LIMIT {per_page} OFFSET {(page_num - 1) * per_page}")
+        querySQL = (f"SELECT * FROM personas "
+                f"ORDER BY id_persona DESC LIMIT {per_page} OFFSET {(page_num - 1) * per_page}")
 
-    cursor.execute(querySQL)
-    list_personas = cursor.fetchall()
+        cursor.execute(querySQL)
+        list_personas = cursor.fetchall()
 
-    # Calcular el índice del último registro
-    end_index = min(start_index + per_page, count)
-    if end_index > count:
-        end_index = count
+        # Calcular el índice del último registro
+        end_index = min(start_index + per_page, count)
+        if end_index > count:
+            end_index = count
 
-    # Crear objeto paginable
-    pagination = Pagination(page=page_num, total=count, per_page=per_page,
-                            display_msg=f"Mostrando registros {start_index} - {end_index} de un total de <strong>({count})</strong>")
-    conexion_MySQLdb.commit()
-    return render_template('public/index.html', list_personas=list_personas, pagination=pagination)
+        # Crear objeto paginable
+        pagination = Pagination(page=page_num, total=count, per_page=per_page,
+                                display_msg=f"Mostrando registros {start_index} - {end_index} de un total de <strong>({count})</strong>")
+        conexion_MySQLdb.commit()
+        return render_template('public/index.html', list_personas=list_personas, pagination=pagination)
 
 
 
-@app.route("/demo2")
+@app.route("/demo2", methods=['GET'])
 def axios():
-    conexion_MySQLdb = connectionBD()
-    cursor = conexion_MySQLdb.cursor(dictionary=True)
+    if request.method    == "POST":
+        conexion_MySQLdb = connectionBD()
+        cursor = conexion_MySQLdb.cursor(dictionary=True)
 
-    # Contar el número total de registros
-    cursor.execute(
-        "SELECT COUNT(*) AS total FROM personas ")
-    count = cursor.fetchone()['total']
+        # Contar el número total de registros
+        cursor.execute(
+            "SELECT COUNT(*) AS total FROM personas ")
+        count = cursor.fetchone()['total']
 
-    # Obtener el número de página actual y la cantidad de resultados por página
-    page_num = request.args.get('page', 1, type=int)
-    per_page = 5
+        # Obtener el número de página actual y la cantidad de resultados por página
+        page_num = request.args.get('page', 1, type=int)
+        per_page = 5
 
-    # Calcular el índice del primer registro y limitar la consulta a un rango de registros
-    start_index = (page_num - 1) * per_page + 1
+        # Calcular el índice del primer registro y limitar la consulta a un rango de registros
+        start_index = (page_num - 1) * per_page + 1
 
-    querySQL = (f"SELECT * FROM personas "
-            f"ORDER BY id_persona DESC LIMIT {per_page} OFFSET {(page_num - 1) * per_page}")
+        querySQL = (f"SELECT * FROM personas "
+                f"ORDER BY id_persona DESC LIMIT {per_page} OFFSET {(page_num - 1) * per_page}")
 
-    cursor.execute(querySQL)
-    list_personas = cursor.fetchall()
+        cursor.execute(querySQL)
+        list_personas = cursor.fetchall()
 
-    # Calcular el índice del último registro
-    end_index = min(start_index + per_page, count)
-    if end_index > count:
-        end_index = count
+        # Calcular el índice del último registro
+        end_index = min(start_index + per_page, count)
+        if end_index > count:
+            end_index = count
 
-    # Crear objeto paginable
-    pagination = Pagination(page=page_num, total=count, per_page=per_page,
-                            display_msg=f"Mostrando registros {start_index} - {end_index} de un total de <strong>({count})</strong>")
-    conexion_MySQLdb.commit()
-    return render_template('public/index_2.html', list_personas=list_personas, pagination=pagination)
+        # Crear objeto paginable
+        pagination = Pagination(page=page_num, total=count, per_page=per_page,
+                                display_msg=f"Mostrando registros {start_index} - {end_index} de un total de <strong>({count})</strong>")
+        conexion_MySQLdb.commit()
+        return render_template('public/index_2.html', list_personas=list_personas, pagination=pagination)
 
 
 
