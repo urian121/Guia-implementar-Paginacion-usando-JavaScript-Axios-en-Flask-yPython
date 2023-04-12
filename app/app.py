@@ -10,7 +10,7 @@ app = Flask(__name__)
 # Creando mi Decorador Home
 @app.route("/",  methods=['GET'])
 def inicio():
-    if request.method    == "POST":
+    if request.method == "GET":
         conexion_MySQLdb = connectionBD()
         cursor = conexion_MySQLdb.cursor(dictionary=True)
 
@@ -47,7 +47,7 @@ def inicio():
 
 @app.route("/demo2", methods=['GET'])
 def axios():
-    if request.method    == "POST":
+    if request.method == "GET":
         conexion_MySQLdb = connectionBD()
         cursor = conexion_MySQLdb.cursor(dictionary=True)
 
